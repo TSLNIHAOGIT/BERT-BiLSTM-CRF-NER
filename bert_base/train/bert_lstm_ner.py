@@ -348,7 +348,8 @@ def file_based_input_fn_builder(input_file, seq_length, is_training, drop_remain
         #华为服务器1cpu 4core 8 log_CPUS ；16g mem
         d = d.apply(tf.data.experimental.map_and_batch(lambda record: _decode_record(record, name_to_features),
                                                        batch_size=batch_size,
-                                                       num_parallel_calls=4,  # 并行处理数据的CPU核心数量，不要大于你机器的核心数
+                                                       ##这里应该是物理cpu数目，不是超线程数
+                                                       num_parallel_calls=1,  # 并行处理数据的CPU核心数量，不要大于你机器的核心数
                                                        drop_remainder=drop_remainder))
         d = d.prefetch(buffer_size=4)
         return d
