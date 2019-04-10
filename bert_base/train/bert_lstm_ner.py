@@ -345,10 +345,10 @@ def file_based_input_fn_builder(input_file, seq_length, is_training, drop_remain
             d = d.repeat()
             d = d.shuffle(buffer_size=300)
         #没有该属性先注释掉
-        #华为服务器1cpu 4core 8 log_CPUS ；16g mem
+        #华为服务器1cpu 4core 8 logi_CPUS ；16g mem
         d = d.apply(tf.data.experimental.map_and_batch(lambda record: _decode_record(record, name_to_features),
                                                        batch_size=batch_size,
-                                                       ##这里应该是物理cpu数目，不是超线程数
+                                                       ##这里应该是物理cpu数目，不是核心数或者超线程数；只有一个物理cpu时，如何设置都会占满
                                                        num_parallel_calls=1,  # 并行处理数据的CPU核心数量，不要大于你机器的核心数
                                                        drop_remainder=drop_remainder))
         d = d.prefetch(buffer_size=4)
@@ -537,9 +537,12 @@ def train(args):
         vocab_file=args.vocab_file, do_lower_case=args.do_lower_case)
 
     session_config = tf.ConfigProto(
+        device_count={"CPU": 4},  # limit to num_cpu_core CPU usage
+
+
         log_device_placement=False,
-        inter_op_parallelism_threads=0,
-        intra_op_parallelism_threads=0,
+        inter_op_parallelism_threads=4,
+        intra_op_parallelism_threads=4,
         allow_soft_placement=True)
 
     run_config = tf.estimator.RunConfig(
