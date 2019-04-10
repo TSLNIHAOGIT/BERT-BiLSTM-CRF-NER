@@ -537,12 +537,13 @@ def train(args):
         vocab_file=args.vocab_file, do_lower_case=args.do_lower_case)
 
     session_config = tf.ConfigProto(
-        device_count={"CPU": 4},  # limit to num_cpu_core CPU usage
+        #应该是物理cpu个数
+        device_count={"CPU": 2},  # limit to num_cpu_core CPU usage
 
-
+        #cpu 核心数*超线程数*物理cpu个数=逻辑cpu数
         log_device_placement=False,
-        inter_op_parallelism_threads=4,
-        intra_op_parallelism_threads=4,
+        inter_op_parallelism_threads=6,
+        intra_op_parallelism_threads=6,
         allow_soft_placement=True)
 
     run_config = tf.estimator.RunConfig(
