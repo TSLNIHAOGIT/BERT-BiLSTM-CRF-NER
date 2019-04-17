@@ -75,18 +75,24 @@ ORG (organisation， 组织机构名)
 PER （person， 人名）
 MISC (miscellaneous， 其他)
 标注方式：bioes
+
+两种说法：
 其中 B表示这个词处于一个实体的开始(Begin), I 表示内部(inside), O 表示外部(outside), E 表示这个词处于一个实体的结束为止， S 表示，这个词是自己就可以组成一个实体(Single)
+其中 B表示这个词处于一个实体的开始(Begin), I 表示内部(Intermediate), O 表示外部(Other), E 表示这个词处于一个实体的结束为止(End)， S 表示，这个词是自己就可以组成一个实体(Single)
+
 模式：
     实体部分字个数：
-        单个字：S
-        两个字BE
-        多余两个字：BIE
+        单个字：S-实体类别
+        两个字：BE-实体类别
+        多余两个字：BIE-实体类别
     非实体部分：
         统一标注O
 eg:
 1.今(O)年(O)海(O)钓(O)比(O)赛(O)在(O)厦(B-LOC)门(I-LOC)市(E-LOC)与(O)金(B-LOC)门(E-LOC)之(O)间(O)的(O)海(O)域(O)举(O)行(O)。
 2.沙(B-ORG)特(I-ORG)队(E-ORG)教(O)练(O)佩(B-PER)雷(I-PER)拉(E-PER)：(O)两(O)支(O)队(O)都(O)想(O)胜(O)，(O)因(O)此(O)都(O)作(O)出(O)了(O)最(O)大(O)的(O)努(O)力(O)。(O)
 
+每行得第一个是字，第二个是它的标签，使用空格’ '分隔，请一定要使用空格。
+句与句之间使用空行划分。程序会自动读取你的数据
 ```
 The first one of each line is a token, the second is token's label, and the line is divided by a blank line. The maximum length of each sentence is [max_seq_length] params.  
 You can get training data from above two git repos  
