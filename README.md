@@ -68,7 +68,25 @@ train/dev/test dataset is like this:
 域 O
 。 O
 
-###这篇文章使用BIO标注的；自己训练时将会使用bioes标注方式
+生 O
+长 O
+在 O
+重 B-LOC
+庆 I-LOC
+市 O
+郊 O
+的 O
+玉 B-LOC
+峰 I-LOC
+山 I-LOC
+麓 O
+。 O
+
+###这篇文章使用BIO标注的；
+(B-begin，I-inside，O-outside)
+
+
+自己训练时将会使用bioes标注方式
 实体类别：
 LOC (location, 地名)
 ORG (organisation， 组织机构名)
