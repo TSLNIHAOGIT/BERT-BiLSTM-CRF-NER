@@ -78,7 +78,7 @@ def get_args_parser():
     group2.add_argument('-label_list', type=str, default=None,
                         help='User define labels， can be a file with one label one line or a string using \',\' split')
 
-    parser.add_argument('-verbose', action='store_true', default=False,
+    parser.add_argument('-verbose', action='store_true', default=True,
                         help='turn on tensorflow logging for debug')
     parser.add_argument('-ner', type=str, default='ner', help='which modle to train')
     parser.add_argument('-version', action='version', version='%(prog)s ' + __version__)

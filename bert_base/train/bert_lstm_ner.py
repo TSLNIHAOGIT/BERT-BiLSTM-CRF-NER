@@ -566,6 +566,8 @@ def train(args):
 
     processor = processors[args.ner](args.output_dir)
 
+
+    ####tokenizer的使用
     tokenizer = tokenization.FullTokenizer(
         vocab_file=args.vocab_file, do_lower_case=args.do_lower_case)
 
