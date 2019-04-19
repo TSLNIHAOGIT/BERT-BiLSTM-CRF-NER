@@ -105,9 +105,10 @@ def predict_online():
             # run session get current feed_dict result
             pred_ids_result = sess.run([pred_ids], feed_dict)
             pred_label_result = convert_id_to_label(pred_ids_result, id2label)
-            print(pred_label_result)
+            print('pred_label_result',pred_label_result)
             #todo: 组合策略
             result = strage_combined_link_org_loc(sentence, pred_label_result[0])
+            print('result',result)
             print('time used: {} sec'.format((datetime.now() - start).total_seconds()))
 
 def convert_id_to_label(pred_ids_result, idx2label):
