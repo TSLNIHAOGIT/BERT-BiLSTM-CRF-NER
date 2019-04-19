@@ -539,6 +539,8 @@ def train(args):
             (args.max_seq_length, bert_config.max_position_embeddings))
 
     # 在re train 的时候，才删除上一轮产出的文件，在predicted 的时候不做clean
+    #args.clean和do_train默认是true;
+    #也就是训练一次之后，第二次再训练时会删除上次的文件
     if args.clean and args.do_train:
         if os.path.exists(args.output_dir):
             def del_file(path):
@@ -558,6 +560,7 @@ def train(args):
                 exit(-1)
 
     #check output dir exists
+    #默认rootpaht+'output'
     if not os.path.exists(args.output_dir):
         os.mkdir(args.output_dir)
 
@@ -571,15 +574,15 @@ def train(args):
         device_count={"CPU": 2},  # limit to num_cpu_core CPU usage
 
         #cpu 核心数*超线程数*物理cpu个数=逻辑cpu数
-        log_device_placement=False,
+        log_device_placement=True,#True打印日志,false不打印日志
         inter_op_parallelism_threads=6,
         intra_op_parallelism_threads=6,
         allow_soft_placement=True)
 
     run_config = tf.estimator.RunConfig(
         model_dir=args.output_dir,
-        save_summary_steps=500,
-        save_checkpoints_steps=500,
+        save_summary_steps=500,##每隔500步保存tensorbaord的summary
+        save_checkpoints_steps=500,##每隔500步保存checkpoints模型
         session_config=session_config
     )
 
@@ -588,6 +591,7 @@ def train(args):
     num_train_steps = None
     num_warmup_steps = None
 
+    # default args.do_train and args.do_eval are true
     if args.do_train and args.do_eval:
         # 加载训练数据
         train_examples = processor.get_train_examples(args.data_dir)
@@ -664,7 +668,7 @@ def train(args):
             eval_dir=None,
             min_steps=0,
             run_every_secs=None,
-            run_every_steps=args.save_checkpoints_steps)
+            run_every_steps=args.save_checkpoints_steps)###
 
         train_spec = tf.estimator.TrainSpec(input_fn=train_input_fn, max_steps=num_train_steps,
                                              hooks=[early_stopping_hook]
@@ -672,6 +676,7 @@ def train(args):
         eval_spec = tf.estimator.EvalSpec(input_fn=eval_input_fn)
         tf.estimator.train_and_evaluate(estimator, train_spec, eval_spec)
 
+    #default do_predict is True
     if args.do_predict:
         token_path = os.path.join(args.output_dir, "token_test.txt")
         if os.path.exists(token_path):
