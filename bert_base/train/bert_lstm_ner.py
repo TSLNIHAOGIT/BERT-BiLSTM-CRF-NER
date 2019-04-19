@@ -109,7 +109,7 @@ class NerProcessor(DataProcessor):
 
     def get_test_examples(self, data_dir):
         return self._create_example(
-            self._read_data(os.path.join(data_dir, "test.txt.txt")), "test.txt")
+            self._read_data(os.path.join(data_dir, "test.txt")), "test")
 
 
     #待会在看怎么调用的

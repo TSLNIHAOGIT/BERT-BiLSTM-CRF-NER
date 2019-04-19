@@ -37,9 +37,9 @@ def get_args_parser():
     group2 = parser.add_argument_group('Model Config', 'config the model params')
     group2.add_argument('-max_seq_length', type=int, default=128,
                         help='The maximum total input sequence length after WordPiece tokenization.')
-    group2.add_argument('-do_train', action='store_false', default=True,
+    group2.add_argument('-do_train', action='store_false', default=False,
                         help='Whether to run training.')
-    group2.add_argument('-do_eval', action='store_false', default=True,
+    group2.add_argument('-do_eval', action='store_false', default=False,
                         help='Whether to run eval on the dev set.')
     group2.add_argument('-do_predict', action='store_false', default=True,
                         help='Whether to run the predict in inference mode on the test.txt set.')
@@ -78,6 +78,7 @@ def get_args_parser():
     group2.add_argument('-label_list', type=str, default=None,
                         help='User define labels， can be a file with one label one line or a string using \',\' split')
 
+    #空值显示tf.logging.ingo()信息
     parser.add_argument('-verbose', action='store_true', default=True,
                         help='turn on tensorflow logging for debug')
     parser.add_argument('-ner', type=str, default='ner', help='which modle to train')
