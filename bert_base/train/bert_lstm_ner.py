@@ -739,7 +739,7 @@ def train(args):
             result_to_pair(writer)
         from bert_base.train import conlleval
         eval_result = conlleval.return_report(output_predict_file)
-        print(''.join(eval_result))
+        print('eval_result',''.join(eval_result))
         # 写结果到文件中
         with codecs.open(os.path.join(args.output_dir, 'predict_score.txt'), 'a', encoding='utf-8') as fd:
             fd.write(''.join(eval_result))
