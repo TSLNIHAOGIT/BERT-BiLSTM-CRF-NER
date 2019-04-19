@@ -710,7 +710,9 @@ def train(args):
 
 
 
+        #####预测结果似乎是写在这里的；里面有三列第一列是内容，第二列是真实标签，第三列是预测标签
         output_predict_file = os.path.join(args.output_dir, "label_test.txt")
+
 
         def result_to_pair(writer):
             for predict_line, prediction in zip(predict_examples, result):
@@ -742,6 +744,7 @@ def train(args):
                     idx += 1
                 writer.write(line + '\n')
 
+        ###打开文件将结果写入
         with codecs.open(output_predict_file, 'w', encoding='utf-8') as writer:
             result_to_pair(writer)
         from bert_base.train import conlleval
