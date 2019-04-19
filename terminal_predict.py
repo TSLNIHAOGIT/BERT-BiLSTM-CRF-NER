@@ -54,6 +54,8 @@ with graph.as_default():
     input_mask_p = tf.placeholder(tf.int32, [batch_size, args.max_seq_length], name="input_mask")
 
     bert_config = modeling.BertConfig.from_json_file(os.path.join(bert_dir, 'bert_config.json'))
+
+    ####预测IDs转为实际序列就是需要的结果
     (total_loss, logits, trans, pred_ids) = create_model(
         bert_config=bert_config, is_training=False, input_ids=input_ids_p, input_mask=input_mask_p, segment_ids=None,
         labels=None, num_labels=num_labels, use_one_hot_embeddings=False, dropout_rate=1.0)
@@ -74,6 +76,8 @@ def predict_online():
     :param line: a list. element is: [dummy_label,text_a,text_b]
     :return:
     """
+
+    #######只要在这里返回batch就可以，批量预测了
     def convert(line):
         feature = convert_single_example(0, line, label_list, args.max_seq_length, tokenizer, 'p')
         input_ids = np.reshape([feature.input_ids],(batch_size, args.max_seq_length))

@@ -56,7 +56,11 @@ class DataProcessor(object):
 
     @classmethod
     def _read_data(cls, input_file):
-        """Reads a BIO data."""
+        """
+        ####################BIO################标注格式的data
+        Reads a BIO data.
+
+        """
         with codecs.open(input_file, 'r', encoding='utf-8') as f:
             lines = []
             words = []
@@ -79,6 +83,12 @@ class DataProcessor(object):
                     words.append('')
                     continue
             return lines
+'''
+[
+    ['O O O O O O O O O O O O O O O B-LOC B-LOC O B-LOC B-LOC O O O O O O O O O O O O O O O O O O O O', '我 们 变 而 以 书 会 友 ， 以 书 结 缘 ， 把 欧 美 、 港 台 流 行 的 食 品 类 图 谱 、 画 册 、 工 具 书 汇 集 一 堂 。']
+    ['O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O', '为 了 跟 踪 国 际 最 新 食 品 工 艺 、 流 行 趋 势 ， 大 量 搜 集 海 外 专 业 书 刊 资 料 是 提 高 技 艺 的 捷 径 。']
+]
+'''
 
 
 class NerProcessor(DataProcessor):
@@ -87,6 +97,7 @@ class NerProcessor(DataProcessor):
         self.output_dir = output_dir
 
     def get_train_examples(self, data_dir):
+        #得到的数据都是类初始化的数据，需要通过属性值进行调用
         return self._create_example(
             self._read_data(os.path.join(data_dir, "train.txt")), "train"
         )
@@ -100,6 +111,8 @@ class NerProcessor(DataProcessor):
         return self._create_example(
             self._read_data(os.path.join(data_dir, "test.txt.txt")), "test.txt")
 
+
+    #待会在看怎么调用的
     def get_labels(self, labels=None):
         if labels is not None:
             try:
@@ -135,6 +148,18 @@ class NerProcessor(DataProcessor):
             label = tokenization.convert_to_unicode(line[0])
             # if i == 0:
             #     print('label: ', label)
+            # print('text：',text)
+            # print('label:',label)
+            '''
+            text： 我 们 变 而 以 书 会 友 ， 以 书 结 缘 ， 把 欧 美 、 港 台 流 行 的 食 品 类 图 谱 、 画 册 、 工 具 书 汇 集 一 堂 。
+            label: O O O O O O O O O O O O O O O B-LOC B-LOC O B-LOC B-LOC O O O O O O O O O O O O O O O O O O O O
+            text： 为 了 跟 踪 国 际 最 新 食 品 工 艺 、 流 行 趋 势 ， 大 量 搜 集 海 外 专 业 书 刊 资 料 是 提 高 技 艺 的 捷 径 。
+            label: O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O
+            text： 其 中 线 装 古 籍 逾 千 册 ； 民 国 出 版 物 几 百 种 ； 珍 本 四 册 、 稀 见 本 四 百 余 册 ， 出 版 时 间 跨 越 三 百 余 年 。
+            label: O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O
+            InputExample(guid=guid, text=text, label=label)是一个类的初始化，可通过
+            a.guid,a.text,a.label,分别调用属性值
+            '''
             examples.append(InputExample(guid=guid, text=text, label=label))
         return examples
 
@@ -184,7 +209,7 @@ def write_tokens(tokens, output_dir, mode):
                 wf.write(token + '\n')
         wf.close()
 
-
+#####label_list可能是所有的label组成的一个集合（去除重复部分）
 def convert_single_example(ex_index, example, label_list, max_seq_length, tokenizer, output_dir, mode):
     """
     将一个样本进行分析，然后将字转化为id, 标签转化为id,然后结构化到InputFeatures对象中
@@ -206,12 +231,14 @@ def convert_single_example(ex_index, example, label_list, max_seq_length, tokeni
         with codecs.open(os.path.join(output_dir, 'label2id.pkl'), 'wb') as w:
             pickle.dump(label_map, w)
 
+    ######调用example初始化类的属性值
     textlist = example.text.split(' ')
     labellist = example.label.split(' ')
     tokens = []
     labels = []
     for i, word in enumerate(textlist):
-        # 分词，如果是中文，就是分字,但是对于一些不在BERT的vocab.txt中得字符会被进行WordPice处理（例如中文的引号），可以将所有的分字操作替换为list(input)
+        # 分词，如果是中文，就是分字,但是对于一些不在BERT的vocab.txt中得字符会被进行WordPice处理
+        # （例如中文的引号），可以将所有的分字操作替换为list(input)
         token = tokenizer.tokenize(word)
         tokens.extend(token)
         label_1 = labellist[i]
@@ -298,6 +325,7 @@ def filed_based_convert_examples_to_features(
     """
     writer = tf.python_io.TFRecordWriter(output_file)
     # 遍历训练数据
+    #examples是所有的训练数据_create_example函数产生
     for (ex_index, example) in enumerate(examples):
         if ex_index % 5000 == 0:
             tf.logging.info("Writing example %d of %d" % (ex_index, len(examples)))
@@ -339,6 +367,8 @@ def file_based_input_fn_builder(input_file, seq_length, is_training, drop_remain
         return example
 
     def input_fn(params):
+
+        ####这个地方读取tf_recard数据，进行_decode_record，并批量化batch_size大小的返回拿去训练
         batch_size = params["batch_size"]
         d = tf.data.TFRecordDataset(input_file)
         if is_training:
@@ -627,7 +657,6 @@ def train(args):
             drop_remainder=False)
 
         # train and eval togither
-        # early stop hook##运行显示没有该方法，先注释掉
         early_stopping_hook = tf.contrib.estimator.stop_if_no_decrease_hook(
             estimator=estimator,
             metric_name='loss',
@@ -638,7 +667,7 @@ def train(args):
             run_every_steps=args.save_checkpoints_steps)
 
         train_spec = tf.estimator.TrainSpec(input_fn=train_input_fn, max_steps=num_train_steps,
-                                            # hooks=[early_stopping_hook]
+                                             hooks=[early_stopping_hook]
                                             )
         eval_spec = tf.estimator.EvalSpec(input_fn=eval_input_fn)
         tf.estimator.train_and_evaluate(estimator, train_spec, eval_spec)
@@ -669,7 +698,11 @@ def train(args):
             is_training=False,
             drop_remainder=predict_drop_remainder)
 
+        #############prdict的时候也是以batch大小的形式
         result = estimator.predict(input_fn=predict_input_fn)
+
+
+
         output_predict_file = os.path.join(args.output_dir, "label_test.txt")
 
         def result_to_pair(writer):
@@ -714,3 +747,23 @@ def train(args):
     if args.filter_adam_var:
         adam_filter(args.output_dir)
 
+
+if __name__=='__main__':
+    ################################
+    # lines=DataProcessor()._read_data('../../NERdata/test.txt')
+    # for each in lines:
+    #     print(each)
+    #################################
+    lines=[
+        ['O O O O O O O O O O O O O O O B-LOC B-LOC O B-LOC B-LOC O O O O O O O O O O O O O O O O O O O O',
+         '我 们 变 而 以 书 会 友 ， 以 书 结 缘 ， 把 欧 美 、 港 台 流 行 的 食 品 类 图 谱 、 画 册 、 工 具 书 汇 集 一 堂 。'],
+        [
+            'O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O', '为 了 跟 踪 国 际 最 新 食 品 工 艺 、 流 行 趋 势 ， 大 量 搜 集 海 外 专 业 书 刊 资 料 是 提 高 技 艺 的 捷 径 。'],
+        [
+            'O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O', '其 中 线 装 古 籍 逾 千 册 ； 民 国 出 版 物 几 百 种 ； 珍 本 四 册 、 稀 见 本 四 百 余 册 ， 出 版 时 间 跨 越 三 百 余 年 。'],
+
+    ]
+    examples=NerProcessor(DataProcessor)._create_example(lines, set_type='test')
+    print('example:',examples)
+    for each in examples:
+        print('each',each.guid)
