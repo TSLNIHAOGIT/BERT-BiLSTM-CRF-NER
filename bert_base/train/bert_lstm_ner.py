@@ -526,7 +526,7 @@ def adam_filter(model_path):
 
 def train(args):
     os.environ['CUDA_VISIBLE_DEVICES'] = args.device_map
-
+    tf.logging.set_verbosity(tf.logging.INFO)
     processors = {
         "ner": NerProcessor
     }
