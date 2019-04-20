@@ -19,13 +19,14 @@ def get_args_parser():
         bert_path = r'F:\陶士来文件\tsl_python_project\BERT-BiLSTM-CRF-NER\chinese_L-12_H-768_A-12'
         root_path = r'F:\陶士来文件\tsl_python_project\BERT-BiLSTM-CRF-NER'
     else:
-        bert_path = '/ai/chinese_L-12_H-768_A-12/'
+        # bert_path = '/ai/chinese_L-12_H-768_A-12/'
+        bert_path = '/ai/uncased_L-12_H-768_A-12/'
         root_path = '/ai'
 
     group1 = parser.add_argument_group('File Paths',
                                        'config the path, checkpoint and filename of a pretrained/fine-tuned BERT model')
     group1.add_argument('-data_dir', type=str, default=os.path.join(root_path, 'NERdata'),
-                        help='train, dev and test.txt data dir')
+                        help='train, dev and test_ch.txt data dir')
     group1.add_argument('-bert_config_file', type=str, default=os.path.join(bert_path, 'bert_config.json'))
     group1.add_argument('-output_dir', type=str, default=os.path.join(root_path, 'output'),
                         help='directory of a pretrained BERT model')
@@ -37,12 +38,12 @@ def get_args_parser():
     group2 = parser.add_argument_group('Model Config', 'config the model params')
     group2.add_argument('-max_seq_length', type=int, default=128,
                         help='The maximum total input sequence length after WordPiece tokenization.')
-    group2.add_argument('-do_train', action='store_false', default=False,
+    group2.add_argument('-do_train', action='store_false', default=True,
                         help='Whether to run training.')
-    group2.add_argument('-do_eval', action='store_false', default=False,
+    group2.add_argument('-do_eval', action='store_false', default=True,
                         help='Whether to run eval on the dev set.')
     group2.add_argument('-do_predict', action='store_false', default=True,
-                        help='Whether to run the predict in inference mode on the test.txt set.')
+                        help='Whether to run the predict in inference mode on the test_ch.txt set.')
     group2.add_argument('-batch_size', type=int, default=32,
                         help='Total batch size for training, eval and predict.')
     group2.add_argument('-learning_rate', type=float, default=1e-5,

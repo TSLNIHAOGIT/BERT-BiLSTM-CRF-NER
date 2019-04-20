@@ -81,9 +81,9 @@ def write_to_file(file, context):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='data pre process')
-    parser.add_argument('--train_data', type=str, default='./NERdata/train.txt')
-    parser.add_argument('--dev_data', type=str, default='./NERdata/dev.txt')
-    parser.add_argument('--test_data', type=str, default='./NERdata/test.txt.txt')
+    parser.add_argument('--train_data', type=str, default='./NERdata/train_ch.txt')
+    parser.add_argument('--dev_data', type=str, default='./NERdata/dev_ch.txt')
+    parser.add_argument('--test_data', type=str, default='./NERdata/test_ch.txt.txt')
     parser.add_argument('--max_seq_length', type=int, default=126)
     args = parser.parse_args()
 
@@ -95,6 +95,6 @@ if __name__ == '__main__':
     context = cut_sentence(args.dev_data, args.max_seq_length)
     write_to_file(args.dev_data, context)
 
-    print('cut test.txt data to max sequence length:{}'.format(args.max_seq_length))
+    print('cut test_ch.txt data to max sequence length:{}'.format(args.max_seq_length))
     context = cut_sentence(args.test_data, args.max_seq_length)
     write_to_file(args.test_data, context)

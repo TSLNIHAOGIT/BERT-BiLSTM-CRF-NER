@@ -73,7 +73,7 @@ flags.DEFINE_bool("do_eval", False, "Whether to run eval on the dev set.")
 
 flags.DEFINE_bool(
     "do_predict", False,
-    "Whether to run the model in inference mode on the test.txt set.")
+    "Whether to run the model in inference mode on the test_ch.txt set.")
 
 flags.DEFINE_integer("train_batch_size", 32, "Total batch size for training.")
 
@@ -125,7 +125,7 @@ flags.DEFINE_integer(
 
 
 class InputExample(object):
-  """A single training/test.txt example for simple sequence classification."""
+  """A single training/test_ch.txt example for simple sequence classification."""
 
   def __init__(self, guid, text_a, text_b=None, label=None):
     """Constructs a InputExample.
@@ -137,7 +137,7 @@ class InputExample(object):
       text_b: (Optional) string. The untokenized text of the second sequence.
         Only must be specified for sequence pair tasks.
       label: (Optional) string. The label of the example. This should be
-        specified for train and dev examples, but not for test.txt examples.
+        specified for train and dev examples, but not for test_ch.txt examples.
     """
     self.guid = guid
     self.text_a = text_a
@@ -250,7 +250,7 @@ class MnliProcessor(DataProcessor):
   def get_test_examples(self, data_dir):
     """See base class."""
     return self._create_examples(
-        self._read_tsv(os.path.join(data_dir, "test_matched.tsv")), "test.txt")
+        self._read_tsv(os.path.join(data_dir, "test_matched.tsv")), "test_ch.txt")
 
   def get_labels(self):
     """See base class."""
@@ -265,7 +265,7 @@ class MnliProcessor(DataProcessor):
       guid = "%s-%s" % (set_type, tokenization.convert_to_unicode(line[0]))
       text_a = tokenization.convert_to_unicode(line[8])
       text_b = tokenization.convert_to_unicode(line[9])
-      if set_type == "test.txt":
+      if set_type == "test_ch.txt":
         label = "contradiction"
       else:
         label = tokenization.convert_to_unicode(line[-1])
@@ -290,7 +290,7 @@ class MrpcProcessor(DataProcessor):
   def get_test_examples(self, data_dir):
     """See base class."""
     return self._create_examples(
-        self._read_tsv(os.path.join(data_dir, "test.txt.tsv")), "test.txt")
+        self._read_tsv(os.path.join(data_dir, "test_ch.txt.tsv")), "test_ch.txt")
 
   def get_labels(self):
     """See base class."""
@@ -305,7 +305,7 @@ class MrpcProcessor(DataProcessor):
       guid = "%s-%s" % (set_type, i)
       text_a = tokenization.convert_to_unicode(line[3])
       text_b = tokenization.convert_to_unicode(line[4])
-      if set_type == "test.txt":
+      if set_type == "test_ch.txt":
         label = "0"
       else:
         label = tokenization.convert_to_unicode(line[0])
@@ -330,7 +330,7 @@ class ColaProcessor(DataProcessor):
   def get_test_examples(self, data_dir):
     """See base class."""
     return self._create_examples(
-        self._read_tsv(os.path.join(data_dir, "test.txt.tsv")), "test.txt")
+        self._read_tsv(os.path.join(data_dir, "test_ch.txt.tsv")), "test_ch.txt")
 
   def get_labels(self):
     """See base class."""
@@ -340,11 +340,11 @@ class ColaProcessor(DataProcessor):
     """Creates examples for the training and dev sets."""
     examples = []
     for (i, line) in enumerate(lines):
-      # Only the test.txt set has a header
-      if set_type == "test.txt" and i == 0:
+      # Only the test_ch.txt set has a header
+      if set_type == "test_ch.txt" and i == 0:
         continue
       guid = "%s-%s" % (set_type, i)
-      if set_type == "test.txt":
+      if set_type == "test_ch.txt":
         text_a = tokenization.convert_to_unicode(line[1])
         label = "0"
       else:

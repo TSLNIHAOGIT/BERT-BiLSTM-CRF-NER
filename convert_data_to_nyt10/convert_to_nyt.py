@@ -1,4 +1,4 @@
-path='../NERdata/dev.txt'
+path='../NERdata/dev_ch.txt'
 with open(path,encoding='utf8') as f:
     each_point_text=[]
     each_point_label=[]

@@ -52,7 +52,7 @@ flags.DEFINE_string("train_file", None,
 
 flags.DEFINE_string(
     "predict_file", None,
-    "SQuAD json for predictions. E.g., dev-v1.1.json or test.txt-v1.1.json")
+    "SQuAD json for predictions. E.g., dev-v1.1.json or test_ch.txt-v1.1.json")
 
 flags.DEFINE_string(
     "init_checkpoint", None,
@@ -155,7 +155,7 @@ flags.DEFINE_float(
 
 
 class SquadExample(object):
-  """A single training/test.txt example for simple sequence classification.
+  """A single training/test_ch.txt example for simple sequence classification.
 
      For examples without an answer, the start and end position are -1.
   """

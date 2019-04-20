@@ -58,7 +58,7 @@ class DataProcessor(object):
     def _read_data(cls, input_file):
         """
         ####################BIO################标注格式的data
-        Reads a BIO data.
+        Reads a BIO data.##或者是　BIOES数据集都没有影响
 
         """
         with codecs.open(input_file, 'r', encoding='utf-8') as f:
@@ -99,46 +99,56 @@ class NerProcessor(DataProcessor):
     def get_train_examples(self, data_dir):
         #得到的数据都是类初始化的数据，需要通过属性值进行调用
         return self._create_example(
-            self._read_data(os.path.join(data_dir, "train.txt")), "train"
+            self._read_data(os.path.join(data_dir, "train_ch.txt")), "train"
         )
 
     def get_dev_examples(self, data_dir):
         return self._create_example(
-            self._read_data(os.path.join(data_dir, "dev.txt")), "dev"
+            self._read_data(os.path.join(data_dir, "dev_ch.txt")), "dev"
         )
 
     def get_test_examples(self, data_dir):
         return self._create_example(
-            self._read_data(os.path.join(data_dir, "test.txt")), "test")
+            self._read_data(os.path.join(data_dir, "test_ch.txt")), "test")
 
 
-    #待会在看怎么调用的
-    def get_labels(self, labels=None):
-        if labels is not None:
-            try:
-                # 支持从文件中读取标签类型
-                if os.path.exists(labels) and os.path.isfile(labels):
-                    with codecs.open(labels, 'r', encoding='utf-8') as fd:
-                        for line in fd:
-                            self.labels.append(line.strip())
-                else:
-                    # 否则通过传入的参数，按照逗号分割
-                    self.labels = labels.split(',')
-                self.labels = set(self.labels) # to set
-            except Exception as e:
-                print(e)
-        # 通过读取train文件获取标签的方法会出现一定的风险。
-        if os.path.exists(os.path.join(self.output_dir, 'label_list.pkl')):
-            with codecs.open(os.path.join(self.output_dir, 'label_list.pkl'), 'rb') as rf:
-                self.labels = pickle.load(rf)
-        else:
-            if len(self.labels) > 0:
-                self.labels = self.labels.union(set(["X", "[CLS]", "[SEP]"]))
-                with codecs.open(os.path.join(self.output_dir, 'label_list.pkl'), 'wb') as rf:
-                    pickle.dump(self.labels, rf)
-            else:
-                self.labels = ["O", 'B-TIM', 'I-TIM', "B-PER", "I-PER", "B-ORG", "I-ORG", "B-LOC", "I-LOC", "X", "[CLS]", "[SEP]"]
-        return self.labels
+    # #待会在看怎么调用的
+    # def get_labels(self, labels=None):
+    #     if labels is not None:
+    #         try:
+    #             # 支持从文件中读取标签类型
+    #             if os.path.exists(labels) and os.path.isfile(labels):
+    #                 with codecs.open(labels, 'r', encoding='utf-8') as fd:
+    #                     for line in fd:
+    #                         self.labels.append(line.strip())
+    #             else:
+    #                 # 否则通过传入的参数，按照逗号分割
+    #                 self.labels = labels.split(',')
+    #             self.labels = set(self.labels) # to set
+    #         except Exception as e:
+    #             print(e)
+    #     # 通过读取train文件获取标签的方法会出现一定的风险。
+    #     if os.path.exists(os.path.join(self.output_dir, 'label_list.pkl')):
+    #         with codecs.open(os.path.join(self.output_dir, 'label_list.pkl'), 'rb') as rf:
+    #             self.labels = pickle.load(rf)
+    #     else:
+    #         if len(self.labels) > 0:
+    #             self.labels = self.labels.union(set(["X", "[CLS]", "[SEP]"]))
+    #             with codecs.open(os.path.join(self.output_dir, 'label_list.pkl'), 'wb') as rf:
+    #                 pickle.dump(self.labels, rf)
+    #         else:
+    #             self.labels = ["O", 'B-TIM', 'I-TIM', "B-PER", "I-PER", "B-ORG", "I-ORG", "B-LOC", "I-LOC", "X", "[CLS]", "[SEP]"]
+    #     return self.labels
+
+
+    #BIOES标签+“X、CLS、SEP”
+    def get_labels(self):
+        return ["O",
+                "B-PER", "I-PER","E-PER","S-PER",
+                "B-ORG", "I-ORG", "E-ORG","S-ORG",
+                "B-LOC", "I-LOC","E-LOC","S-LOC",
+                "X", "[CLS]", "[SEP]"]
+
 
     def _create_example(self, lines, set_type):
         examples = []
@@ -201,7 +211,7 @@ def write_tokens(tokens, output_dir, mode):
     :param mode:
     :return:
     """
-    if mode == "test.txt":
+    if mode == "test_ch.txt":
         path = os.path.join(output_dir, "token_" + mode + ".txt")
         wf = codecs.open(path, 'a', encoding='utf-8')
         for token in tokens:
@@ -306,7 +316,7 @@ def convert_single_example(ex_index, example, label_list, max_seq_length, tokeni
         label_ids=label_ids,
         # label_mask = label_mask
     )
-    # mode='test.txt'的时候才有效
+    # mode='test_ch.txt'的时候才有效
     write_tokens(ntokens, output_dir, mode)
     return feature
 
@@ -692,7 +702,7 @@ def train(args):
         predict_file = os.path.join(args.output_dir, "predict.tf_record")
         filed_based_convert_examples_to_features(predict_examples, label_list,
                                                  args.max_seq_length, tokenizer,
-                                                 predict_file, args.output_dir, mode="test.txt")
+                                                 predict_file, args.output_dir, mode="test_ch.txt")
 
         tf.logging.info("***** Running prediction*****")
         tf.logging.info("  Num examples = %d", len(predict_examples))
@@ -760,7 +770,7 @@ def train(args):
 
 if __name__=='__main__':
     ################################
-    # lines=DataProcessor()._read_data('../../NERdata/test.txt')
+    # lines=DataProcessor()._read_data('../../NERdata/test_ch.txt')
     # for each in lines:
     #     print(each)
     #################################
