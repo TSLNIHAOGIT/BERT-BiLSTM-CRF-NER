@@ -17,7 +17,7 @@ from bert_base.bert import tokenization, modeling
 from bert_base.train.train_helper import get_args_parser
 args = get_args_parser()
 
-model_dir = '/ai/output'
+model_dir = '/ai/output0'
 bert_dir = '/ai/chinese_L-12_H-768_A-12/'
 
 is_training=False

@@ -13,6 +13,7 @@ from bert_base.client import BertClient
 def ner_test():
     with BertClient(show_server_config=False, check_version=False, check_length=False, mode='NER') as bc:
         start_t = time.perf_counter()
+        str1='我们变而以书会友，以书结缘，把欧美、港台流行的食品类图谱、画册、工具书汇集一堂。'
         str1 = '1月24日，新华社对外发布了中央对雄安新区的指导意见，洋洋洒洒1.2万多字，17次提到北京，4次提到天津，信息量很大，其实也回答了人们关心的很多问题。'
         # rst = bc.encode([list(str1)], is_tokenized=True)
         # str1 = list(str1)
