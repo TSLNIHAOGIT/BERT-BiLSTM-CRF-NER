@@ -147,7 +147,7 @@ class NerProcessor(DataProcessor):
                 "B-PER", "I-PER","E-PER","S-PER",
                 "B-ORG", "I-ORG", "E-ORG","S-ORG",
                 "B-LOC", "I-LOC","E-LOC","S-LOC",
-                "B-MSIC", "I-MISC", "E-MISC", "S-MISC",
+                "B-MISC", "I-MISC", "E-MISC", "S-MISC",
                 "X", "[CLS]", "[SEP]"]
 
 
