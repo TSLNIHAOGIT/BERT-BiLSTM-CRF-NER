@@ -111,6 +111,16 @@ eg:
 
 每行得第一个是字，第二个是它的标签，使用空格’ '分隔，请一定要使用空格。
 句与句之间使用空行划分。程序会自动读取你的数据
+
+
+###实体关系抽取，一句中有多个实体对就需要打多个标签
+Unlike other reborn regions , Navarre lacks both industry leaders to set examples -- like the Mastroberardinos of Campania in southern Italy and the Palacios family of Bierzo in Spain -- and distinctive indigenous grapes to carve out identities .
+O O O O O S-LOC O O O O O O O O O O O O O O O O O O O O O O O S-LOC O O O O O O O O O O
+each_sentence_entitys ['Navarre', 'Spain']
+
+Unlike other reborn regions , Navarre lacks both industry leaders to set examples -- like the Mastroberardinos of Campania in southern Italy and the Palacios family of Bierzo in Spain -- and distinctive indigenous grapes to carve out identities .
+O O O O O O O O O O O O O O O O O O S-LOC O O S-LOC O O O O O O O O O O O O O O O O O O
+each_sentence_entitys ['Campania', 'Italy']
 ```
 The first one of each line is a token, the second is token's label, and the line is divided by a blank line. The maximum length of each sentence is [max_seq_length] params.  
 You can get training data from above two git repos  
