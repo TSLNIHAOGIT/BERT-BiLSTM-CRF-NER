@@ -1,8 +1,23 @@
 import json
+import random
+from convert_data_to_nyt10 import generate_id
+with open('../output/rel2id.json') as f:
+    relation_dict=json.load(f)
+
+relations=list(relation_dict.keys())
+
 path='../output/label_test.txt'
 path_relation='../output/label_test_relation.json'
 all_rel_data=[]
 each_sentence_rel_data={}
+
+counts = 1000
+all_ids=generate_id.generateid_list(counts)
+
+rel_count=52
+
+
+
 with open(path,encoding='utf8') as f:
     each_point_text=[]
     each_point_label=[]
@@ -10,9 +25,10 @@ with open(path,encoding='utf8') as f:
 
 
     each_sentence_entitys = []
+    each_sentence_entitys_label = []
     eachs_entity = ''
 
-    for each in f:
+    for index, each in enumerate(f):
             each_list=each.strip().split(' ')
             length=len(each_list)
 
@@ -23,10 +39,14 @@ with open(path,encoding='utf8') as f:
                 sentence_label = ' '.join(each_point_label)
 
                 if len(each_sentence_entitys)>1:
-                        each_sentence_rel_data['head']={'word':each_sentence_entitys[0]}
-                        each_sentence_rel_data['tail'] = {'word': each_sentence_entitys[1]}
+                        each_sentence_rel_data['head']={'word':each_sentence_entitys[0],'label':each_sentence_entitys_label[0],'id':all_ids[int(random.random()*counts)]}
+
+                        each_sentence_rel_data['tail'] = {'word': each_sentence_entitys[1],'label':each_sentence_entitys_label[1],'id':all_ids[int(random.random()*counts)]}
+
 
                         each_sentence_rel_data['sentence'] = sentence_text
+                        # each_sentence_rel_data['relation'] = relations[int(random.random()*rel_count)]
+                        each_sentence_rel_data['relation'] =''
 
                         all_rel_data.append(each_sentence_rel_data)
 
@@ -40,22 +60,34 @@ with open(path,encoding='utf8') as f:
                         # #
                         # print('sentence_text0:',sentence_text)
                         # print('sentence_label0:',sentence_label)
-                        # print('\n*********************\n')
+
+                        #此时只有两个实体一个是head另一个是tail,单纯实体识别时会出现多个实体的情况
+                        #此时取前两个一个head另一个为tail
+                        if len(each_sentence_entitys)>2:
+                            print('each_sentence_entitys:',each_sentence_entitys)
+                            print('each_sentence_entitys_label',each_sentence_entitys_label)
+                            '''
+                            sentence_text0: The Little Comedy , '' a mannered operetta based on a short story by Arthur Schnitzler set in fin-de-si ècle Vienna , opens the evening .
+                            sentence_label0: O B-PER E-PER O O O O O O O O O O O B-PER E-PER O O O O S-LOC O O O O O
+                            each_sentence_entitys: ['Little Comedy', 'Arthur Schnitzler', 'Vienna']
+                            '''
+                            print('\n*********************\n')
                 else:
                         ##只含有一个实体是因为以"."分隔行，这样可能只有一个实体，可能两个实体名称相同造成
                         pass
-                        print('sentence_text1:', sentence_text)
-                        print('sentence_label1:', sentence_label)
-                        print('each_sentence_entitys1', each_sentence_entitys)
-
                         # print('sentence_text1:', sentence_text)
                         # print('sentence_label1:', sentence_label)
-                        print('\n*********************\n')
+                        # print('each_sentence_entitys1', each_sentence_entitys)
+                        #
+                        # # print('sentence_text1:', sentence_text)
+                        # # print('sentence_label1:', sentence_label)
+                        # print('\n*********************\n')
 
                 ###添加一个个字组成一句话
                 each_point_text=[]
                 each_point_label=[]
                 each_sentence_entitys = []
+                each_sentence_entitys_label=[]
                 # print("right_amounts",right_amounts)
 
             else:
@@ -81,6 +113,7 @@ with open(path,encoding='utf8') as f:
                     if ll[0]=='S':
                         if text not in each_sentence_entitys:
                             each_sentence_entitys.append(text)
+                            each_sentence_entitys_label.append(ll[1])
                     elif ll[0]=='B':
                         eachs_entity=eachs_entity +text
                         pass
@@ -91,6 +124,7 @@ with open(path,encoding='utf8') as f:
                         eachs_entity = eachs_entity+' '  + text
                         if eachs_entity not in each_sentence_entitys:
                             each_sentence_entitys.append(eachs_entity)
+                            each_sentence_entitys_label.append(ll[1])
                         # print('each_sentence_entitys',each_sentence_entitys)
                         ####适用于包含E结尾的实体，如果都是s那么就不适合
                         eachs_entity=''
@@ -98,9 +132,11 @@ with open(path,encoding='utf8') as f:
                     else:
                         continue
 
+print('all_rel_data',all_rel_data)
+
 with open(path_relation,'w') as f:
     #两种效果一样
-    # f.write(json.dumps(all_rel_data),indent=4)
+    ## f.write(json.dumps(all_rel_data,indent=4))
     json.dump(all_rel_data,f,indent=4)
 
 # for each in all_rel_data:
