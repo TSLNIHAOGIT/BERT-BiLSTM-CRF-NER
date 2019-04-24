@@ -150,7 +150,7 @@ with open(path,encoding='utf8') as f:
                         continue
 
 print('all_rel_data',all_rel_data)
-print('len(all_ids_dict)',len(all_ids_dict))
+print('len(all_ids_dict)',len(all_ids_dict))#len(all_ids_dict) 8521
 
 with open(path_relation,'w') as f:
     #两种效果一样

@@ -107,6 +107,7 @@ class NerProcessor(DataProcessor):
             self._read_data(os.path.join(data_dir, "dev_ch.txt")), "dev"
         )
 
+    #用于预测
     def get_test_examples(self, data_dir):
         return self._create_example(
             self._read_data(os.path.join(data_dir, "test_ch.txt")), "test")
@@ -587,7 +588,7 @@ def train(args):
         device_count={"CPU": 2},  # limit to num_cpu_core CPU usage
 
         #cpu 核心数*超线程数*物理cpu个数=逻辑cpu数
-        log_device_placement=True,#True打印日志,false不打印日志
+        log_device_placement=False,#True打印日志,false不打印日志
         inter_op_parallelism_threads=6,
         intra_op_parallelism_threads=6,
         allow_soft_placement=True)
