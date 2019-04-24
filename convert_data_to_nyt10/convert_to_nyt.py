@@ -11,11 +11,15 @@ path_relation='../output/label_test_relation.json'
 all_rel_data=[]
 each_sentence_rel_data={}
 
-counts = 1000
+
+##随机取会导致实体id重复，因此要将每个实体的分配唯一id
+counts = 9000
 all_ids=generate_id.generateid_list(counts)
 
-rel_count=52
+# rel_count=52
 
+counts_entity=0
+all_ids_dict={}
 
 
 with open(path,encoding='utf8') as f:
@@ -39,9 +43,22 @@ with open(path,encoding='utf8') as f:
                 sentence_label = ' '.join(each_point_label)
 
                 if len(each_sentence_entitys)>1:
-                        each_sentence_rel_data['head']={'word':each_sentence_entitys[0],'label':each_sentence_entitys_label[0],'id':all_ids[int(random.random()*counts)]}
+                        if each_sentence_entitys[0] not in all_ids_dict:
+                            all_ids_dict[each_sentence_entitys[0]]=all_ids[counts_entity]
+                            counts_entity = counts_entity + 1
+                        if each_sentence_entitys[1] not in all_ids_dict:
+                            all_ids_dict[each_sentence_entitys[1]]= all_ids[counts_entity]
+                            counts_entity = counts_entity + 1
 
-                        each_sentence_rel_data['tail'] = {'word': each_sentence_entitys[1],'label':each_sentence_entitys_label[1],'id':all_ids[int(random.random()*counts)]}
+                        # print('all_ids_dict',all_ids_dict)
+
+
+
+                        #随机取的id会导致id重复
+                        each_sentence_rel_data['head']={'word':each_sentence_entitys[0],'label':each_sentence_entitys_label[0],'id':all_ids_dict[each_sentence_entitys[0]]}
+                        each_sentence_rel_data['tail'] = {'word': each_sentence_entitys[1],'label':each_sentence_entitys_label[1],'id':all_ids_dict[each_sentence_entitys[1]]}
+
+
 
 
                         each_sentence_rel_data['sentence'] = sentence_text
@@ -133,6 +150,7 @@ with open(path,encoding='utf8') as f:
                         continue
 
 print('all_rel_data',all_rel_data)
+print('len(all_ids_dict)',len(all_ids_dict))
 
 with open(path_relation,'w') as f:
     #两种效果一样
