@@ -631,7 +631,7 @@ def train(args):
     label_list = processor.get_labels()
     # 返回的model_dn 是一个函数，其定义了模型，训练，评测方法，并且使用钩子参数，加载了BERT模型的参数进行了自己模型的参数初始化过程
     # tf 新的架构方法，通过定义model_fn 函数，定义模型，然后通过EstimatorAPI进行模型的其他工作，Es就可以控制模型的训练，预测，评估工作等。
-    tf.logging.info('调用model_fn_builer')
+    tf.logging.info('def model_fn_builer')
     model_fn = model_fn_builder(
         bert_config=bert_config,
         num_labels=len(label_list) + 1,
@@ -645,7 +645,7 @@ def train(args):
         'batch_size': args.batch_size
     }
 
-    tf.logging.info('定义estimator')
+    tf.logging.info('def estimator')
     estimator = tf.estimator.Estimator(
         model_fn,
         params=params,
@@ -654,27 +654,27 @@ def train(args):
     #train和eval都为真时才会进行训练和评估
     if args.do_train and args.do_eval:
         # 1. 将数据转化为tf_record 数据
-        tf.logging.info('将数据转化为train tf_record 数据')
+        tf.logging.info('convert data into train tf_record ')
         train_file = os.path.join(args.output_dir, "train.tf_record")
         if not os.path.exists(train_file):
             filed_based_convert_examples_to_features(
                 train_examples, label_list, args.max_seq_length, tokenizer, train_file, args.output_dir)
 
         # 2.读取record 数据，组成batch
-        tf.logging.info('读取train record 数据，组成batch')
+        tf.logging.info('read train record and convert to batch')
         train_input_fn = file_based_input_fn_builder(
             input_file=train_file,
             seq_length=args.max_seq_length,
             is_training=True,
             drop_remainder=True)
         # estimator.train(input_fn=train_input_fn, max_steps=num_train_steps)
-        tf.logging.info('将数据转化为eval tf_record 数据')
+        tf.logging.info('convert data to eval tf_record 数据')
         eval_file = os.path.join(args.output_dir, "eval.tf_record")
         if not os.path.exists(eval_file):
             filed_based_convert_examples_to_features(
                 eval_examples, label_list, args.max_seq_length, tokenizer, eval_file, args.output_dir)
 
-        tf.logging.info('读取eval record 数据，组成batch')
+        tf.logging.info('read eval record ，convert to batch')
         eval_input_fn = file_based_input_fn_builder(
             input_file=eval_file,
             seq_length=args.max_seq_length,
@@ -682,7 +682,7 @@ def train(args):
             drop_remainder=False)
 
         # train and eval togither
-        tf.logging.info('调用early stopping hook')
+        tf.logging.info('call early stopping hook')
         early_stopping_hook = tf.contrib.estimator.stop_if_no_decrease_hook(
             estimator=estimator,
             metric_name='loss',
@@ -692,13 +692,13 @@ def train(args):
             run_every_secs=None,
             run_every_steps=args.save_checkpoints_steps)###
 
-        tf.logging.info('调用train_spec')
+        tf.logging.info('call train_spec')
         train_spec = tf.estimator.TrainSpec(input_fn=train_input_fn, max_steps=num_train_steps,
                                              hooks=[early_stopping_hook]
                                             )
-        tf.logging.info('调用eval_spec')
+        tf.logging.info('call eval_spec')
         eval_spec = tf.estimator.EvalSpec(input_fn=eval_input_fn)
-        tf.logging.info('调用tf.estimator.train_and_evaluate')
+        tf.logging.info('call tf.estimator.train_and_evaluate')
         tf.estimator.train_and_evaluate(estimator, train_spec, eval_spec)
 
     #default do_predict is True
@@ -723,7 +723,7 @@ def train(args):
 
         predict_drop_remainder = False
 
-        tf.logging.info('调用pred predict_input_fn')
+        tf.logging.info('call pred predict_input_fn')
         predict_input_fn = file_based_input_fn_builder(
             input_file=predict_file,
             seq_length=args.max_seq_length,
@@ -731,7 +731,7 @@ def train(args):
             drop_remainder=predict_drop_remainder)
 
         #############prdict的时候也是以batch大小的形式
-        tf.logging.info('开始预测，estimator.predict')
+        tf.logging.info('start predict，estimator.predict')
         result = estimator.predict(input_fn=predict_input_fn)
 
 
@@ -748,8 +748,8 @@ def train(args):
                 label_token = str(predict_line.label).split(' ')
                 len_seq = len(label_token)
                 if len(line_token) != len(label_token):
-                    tf.logging.info(predict_line.text)
-                    tf.logging.info(predict_line.label)
+                    tf.logging.info('predict_line.text:\n{}'.format(predict_line.text))
+                    tf.logging.info('predict_line.label:\n{}'.format(predict_line.label))
                     break
                 for id in prediction:
                     if idx >= len_seq:
@@ -762,23 +762,25 @@ def train(args):
                     try:
                         line += line_token[idx] + ' ' + label_token[idx] + ' ' + curr_labels + '\n'
                     except Exception as e:
-                        tf.logging.info(e)
-                        tf.logging.info(predict_line.text)
-                        tf.logging.info(predict_line.label)
+                        tf.logging.info('e:\n{}'.format(e))
+
+
+                        tf.logging.info('predict_line.text:\n{}'.format(predict_line.text))
+                        tf.logging.info('predict_line.label:\n{}'.format(predict_line.label))
                         line = ''
                         break
                     idx += 1
                 writer.write(line + '\n')
 
         ###打开文件将结果写入
-        tf.logging.info('保存预测结果label_test.txt')
+        tf.logging.info('save predicted result :label_test.txt')
         with codecs.open(output_predict_file, 'w', encoding='utf-8') as writer:
             result_to_pair(writer)
         from bert_base.train import conlleval
         eval_result = conlleval.return_report(output_predict_file)
         tf.logging.info('eval_result\n',''.join(eval_result))
         # 写结果到文件中
-        tf.logging.info('保存predict_score.txt')
+        tf.logging.info('save predict_score.txt')
         with codecs.open(os.path.join(args.output_dir, 'predict_score.txt'), 'a', encoding='utf-8') as fd:
             fd.write(''.join(eval_result))
     # filter model
