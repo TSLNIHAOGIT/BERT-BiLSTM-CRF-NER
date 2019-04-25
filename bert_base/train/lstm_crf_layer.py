@@ -109,7 +109,7 @@ class BLSTM_CRF(object):
     #实际多层双向rnn
     def blstm_layer(self, embedding_chars):
 
-        print('_inputs', embedding_chars)  # Tensor("encoder/embedding_lookup/Identity:0", shape=(?, ?, 1024), dtype=float32)
+        print('embedding_chars', embedding_chars)  # Tensor("encoder/embedding_lookup/Identity:0", shape=(?, ?, 1024), dtype=float32)
         ###
         # 5-50／10000 L2；
 
@@ -125,13 +125,14 @@ class BLSTM_CRF(object):
                 rnn_cell_fw, rnn_cell_bw = self._bi_dir_rnn()
                 initial_state_fw = rnn_cell_fw.zero_state(self.lengths, dtype=tf.float32)
                 initial_state_bw = rnn_cell_bw.zero_state(self.lengths, dtype=tf.float32)
+
                 (output, state) = tf.nn.bidirectional_dynamic_rnn(rnn_cell_fw, rnn_cell_bw, embedding_chars,
                                                                   initial_state_fw=initial_state_fw,
                                                                   initial_state_bw=initial_state_bw,
                                                                   dtype=tf.float32)
                 print('index,output', index, output)
-                _inputs = tf.concat(output, 2)
-        encoder_outputs = _inputs
+                embedding_chars = tf.concat(output, 2)
+        encoder_outputs = embedding_chars
         return encoder_outputs
 
     def project_bilstm_layer(self, lstm_outputs, name=None):
