@@ -89,51 +89,52 @@ class BLSTM_CRF(object):
             cell_fw = rnn.DropoutWrapper(cell_fw, output_keep_prob=self.dropout_rate)
         return cell_fw, cell_bw
 
-    def blstm_layer(self, embedding_chars):
-        """
-
-        :return:
-        """
-        with tf.variable_scope('rnn_layer'):
-            cell_fw, cell_bw = self._bi_dir_rnn()
-            ##伪多层双向rnn
-            if self.num_layers > 1:
-                cell_fw = rnn.MultiRNNCell([cell_fw] * self.num_layers, state_is_tuple=True)
-                cell_bw = rnn.MultiRNNCell([cell_bw] * self.num_layers, state_is_tuple=True)
-
-            outputs, _ = tf.nn.bidirectional_dynamic_rnn(cell_fw, cell_bw, embedding_chars,
-                                                         dtype=tf.float32)
-            outputs = tf.concat(outputs, axis=2)
-        return outputs
-
-    #实际多层双向rnn
     # def blstm_layer(self, embedding_chars):
+    #     """
     #
-    #     print('embedding_chars', embedding_chars)  # Tensor("encoder/embedding_lookup/Identity:0", shape=(?, ?, 1024), dtype=float32)
-    #     ###
-    #     # 5-50／10000 L2；
+    #     :return:
+    #     """
+    #     with tf.variable_scope('rnn_layer'):
+    #         cell_fw, cell_bw = self._bi_dir_rnn()
+    #         ##伪多层双向rnn
+    #         if self.num_layers > 1:
+    #             cell_fw = rnn.MultiRNNCell([cell_fw] * self.num_layers, state_is_tuple=True)
+    #             cell_bw = rnn.MultiRNNCell([cell_bw] * self.num_layers, state_is_tuple=True)
     #
-    #     if len(embedding_chars.get_shape().as_list()) != 3:
-    #         raise ValueError("the inputs must be 3-dimentional Tensor")
-    #
-    #     for index, _ in enumerate(range(self.num_layers)):
-    #         # 为什么在这加个variable_scope,被逼的,tf在rnn_cell的__call__中非要搞一个命名空间检查
-    #         # 恶心的很.如果不在这加的话,会报错的.
-    #         with tf.variable_scope(None, default_name="bidirectional-rnn"):
-    #             print(index, 'embedding_chars o', embedding_chars)
-    #             # 这个结构每次要重新加载，否则会把之前的参数也保留从而出错
-    #             rnn_cell_fw, rnn_cell_bw = self._bi_dir_rnn()
-    #             initial_state_fw = rnn_cell_fw.zero_state(self.lengths, dtype=tf.float32)
-    #             initial_state_bw = rnn_cell_bw.zero_state(self.lengths, dtype=tf.float32)
-    #
-    #             (output, state) = tf.nn.bidirectional_dynamic_rnn(rnn_cell_fw, rnn_cell_bw, embedding_chars,
-    #                                                               initial_state_fw=initial_state_fw,
-    #                                                               initial_state_bw=initial_state_bw,
-    #                                                               dtype=tf.float32)
-    #             print('index,output', index, output)
-    #             embedding_chars = tf.concat(output, 2)
-    #     encoder_outputs = embedding_chars
-    #     return encoder_outputs
+    #         outputs, _ = tf.nn.bidirectional_dynamic_rnn(cell_fw, cell_bw, embedding_chars,
+    #                                                      dtype=tf.float32)
+    #         outputs = tf.concat(outputs, axis=2)
+    #     return outputs
+
+    ##实际多层双向rnn
+    def blstm_layer(self, embedding_chars):
+
+        print('embedding_chars', embedding_chars)  # Tensor("encoder/embedding_lookup/Identity:0", shape=(?, ?, 1024), dtype=float32)
+        ###
+        # 5-50／10000 L2；
+
+        if len(embedding_chars.get_shape().as_list()) != 3:
+            raise ValueError("the inputs must be 3-dimentional Tensor")
+
+        for index, _ in enumerate(range(self.num_layers)):
+            # 为什么在这加个variable_scope,被逼的,tf在rnn_cell的__call__中非要搞一个命名空间检查
+            # 恶心的很.如果不在这加的话,会报错的.
+            with tf.variable_scope(None, default_name="bidirectional-rnn"):
+                print(index, 'embedding_chars o', embedding_chars)
+                # 这个结构每次要重新加载，否则会把之前的参数也保留从而出错
+                rnn_cell_fw, rnn_cell_bw = self._bi_dir_rnn()
+                print('self.lengths',self.lengths)
+                # initial_state_fw = rnn_cell_fw.zero_state(self.lengths, dtype=tf.float32)
+                # initial_state_bw = rnn_cell_bw.zero_state(self.lengths, dtype=tf.float32)
+
+                (output, _) = tf.nn.bidirectional_dynamic_rnn(rnn_cell_fw, rnn_cell_bw, embedding_chars,
+                                                                  # initial_state_fw=initial_state_fw,
+                                                                  # initial_state_bw=initial_state_bw,
+                                                                  dtype=tf.float32)
+                print('index,output', index, output)
+                embedding_chars = tf.concat(output, 2)
+        encoder_outputs = embedding_chars
+        return encoder_outputs
 
     def project_bilstm_layer(self, lstm_outputs, name=None):
         """
