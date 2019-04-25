@@ -53,6 +53,7 @@ class BLSTM_CRF(object):
             logits = self.project_crf_layer(self.embedded_chars)
         else:
             # blstm
+            print("start call blstm")
             lstm_output = self.blstm_layer(self.embedded_chars)
             # project
             logits = self.project_bilstm_layer(lstm_output)
@@ -61,6 +62,7 @@ class BLSTM_CRF(object):
         # CRF decode, pred_ids 是一条最大概率的标注路径
         pred_ids, _ = crf.crf_decode(potentials=logits, transition_params=trans, sequence_length=self.lengths)
         return (loss, logits, trans, pred_ids)
+
 
     def _witch_cell(self):
         """
@@ -112,18 +114,14 @@ class BLSTM_CRF(object):
 
         if len(embedding_chars.get_shape().as_list()) != 3:
             raise ValueError("the inputs must be 3-dimentional Tensor")
-        all_layer_final_state = []
+
         for index, _ in enumerate(range(self.num_layers)):
             # 为什么在这加个variable_scope,被逼的,tf在rnn_cell的__call__中非要搞一个命名空间检查
             # 恶心的很.如果不在这加的话,会报错的.
             with tf.variable_scope(None, default_name="bidirectional-rnn"):
                 print(index, 'embedding_chars o', embedding_chars)
-
-
                 # 这个结构每次要重新加载，否则会把之前的参数也保留从而出错
-
                 rnn_cell_fw, rnn_cell_bw = self._bi_dir_rnn()
-
                 initial_state_fw = rnn_cell_fw.zero_state(self.lengths, dtype=tf.float32)
                 initial_state_bw = rnn_cell_bw.zero_state(self.lengths, dtype=tf.float32)
                 (output, state) = tf.nn.bidirectional_dynamic_rnn(rnn_cell_fw, rnn_cell_bw, embedding_chars,

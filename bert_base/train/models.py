@@ -99,7 +99,7 @@ def create_model(bert_config, is_training, input_ids, input_mask,
                           dropout_rate=dropout_rate, initializers=initializers, num_labels=num_labels,
                           seq_length=max_seq_length, labels=labels, lengths=lengths, is_training=is_training)
     # crf_only = True时只使用bert+crf ,否则使用bert+bilstm+crf
-    rst = blstm_crf.add_blstm_crf_layer(crf_only=True)
+    rst = blstm_crf.add_blstm_crf_layer(crf_only=False)
     return rst
 
 
