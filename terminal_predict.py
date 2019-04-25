@@ -90,7 +90,7 @@ def predict_online():
     with graph.as_default():
         print(id2label)
         while True:
-            print('input the test_ch.txt sentence:')
+            print('input the test.txt sentence:')
             sentence = str(input())
             start = datetime.now()
             if len(sentence) < 2:

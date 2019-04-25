@@ -20,7 +20,7 @@ class Model(object):
 
 
 class InputExample(object):
-    """A single training/test_ch.txt example for simple sequence classification."""
+    """A single training/test.txt example for simple sequence classification."""
 
     def __init__(self, guid=None, text=None, label=None):
         """Constructs a InputExample.
@@ -29,7 +29,7 @@ class InputExample(object):
           text_a: string. The untokenized text of the first sequence. For single
             sequence tasks, only this sequence must be specified.
           label: (Optional) string. The label of the example. This should be
-            specified for train and dev examples, but not for test_ch.txt examples.
+            specified for train and dev examples, but not for test.txt examples.
         """
         self.guid = guid
         self.text = text

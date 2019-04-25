@@ -99,18 +99,18 @@ class NerProcessor(DataProcessor):
     def get_train_examples(self, data_dir):
         #得到的数据都是类初始化的数据，需要通过属性值进行调用
         return self._create_example(
-            self._read_data(os.path.join(data_dir, "train_ch.txt")), "train"
+            self._read_data(os.path.join(data_dir, "train.txt")), "train"
         )
 
     def get_dev_examples(self, data_dir):
         return self._create_example(
-            self._read_data(os.path.join(data_dir, "dev_ch.txt")), "dev"
+            self._read_data(os.path.join(data_dir, "dev.txt")), "dev"
         )
 
     #用于预测
     def get_test_examples(self, data_dir):
         return self._create_example(
-            self._read_data(os.path.join(data_dir, "test_ch.txt")), "test")
+            self._read_data(os.path.join(data_dir, "test.txt")), "test")
 
 
     # #待会在看怎么调用的
@@ -213,8 +213,8 @@ def write_tokens(tokens, output_dir, mode):
     :param mode:
     :return:
     """
-    if mode == "test_ch.txt":
-        path = os.path.join(output_dir, "token_" + mode + ".txt")
+    if mode == "test.txt":
+        path = os.path.join(output_dir, "token_" + mode)# + ".txt")
         wf = codecs.open(path, 'a', encoding='utf-8')
         for token in tokens:
             if token != "**NULL**":
@@ -318,7 +318,7 @@ def convert_single_example(ex_index, example, label_list, max_seq_length, tokeni
         label_ids=label_ids,
         # label_mask = label_mask
     )
-    # mode='test_ch.txt'的时候才有效
+    # mode='test.txt'的时候才有效
     write_tokens(ntokens, output_dir, mode)
     return feature
 
@@ -715,7 +715,7 @@ def train(args):
         predict_file = os.path.join(args.output_dir, "predict.tf_record")
         filed_based_convert_examples_to_features(predict_examples, label_list,
                                                  args.max_seq_length, tokenizer,
-                                                 predict_file, args.output_dir, mode="test_ch.txt")
+                                                 predict_file, args.output_dir, mode="test.txt")
 
         tf.logging.info("***** Running prediction*****")
         tf.logging.info("  Num examples = %d", len(predict_examples))
@@ -790,7 +790,7 @@ def train(args):
 
 if __name__=='__main__':
     ################################
-    # lines=DataProcessor()._read_data('../../NERdata/test_ch.txt')
+    # lines=DataProcessor()._read_data('../../NERdata/test.txt')
     # for each in lines:
     #     print(each)
     #################################
