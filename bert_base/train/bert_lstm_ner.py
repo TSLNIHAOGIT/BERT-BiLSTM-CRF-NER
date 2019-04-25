@@ -778,7 +778,7 @@ def train(args):
             result_to_pair(writer)
         from bert_base.train import conlleval
         eval_result = conlleval.return_report(output_predict_file)
-        tf.logging.info('eval_result\n',''.join(eval_result))
+        tf.logging.info('eval_result:\n'.format(''.join(eval_result)))
         # 写结果到文件中
         tf.logging.info('save predict_score.txt')
         with codecs.open(os.path.join(args.output_dir, 'predict_score.txt'), 'a', encoding='utf-8') as fd:
