@@ -59,7 +59,7 @@ def get_args_parser():
                              'E.g., 0.1 = 10% of training.')
     group2.add_argument('-lstm_size', type=int, default=128,
                         help='size of lstm units.')
-    group2.add_argument('-num_layers', type=int, default=1,
+    group2.add_argument('-num_layers', type=int, default=4,
                         help='number of rnn layers, default is 1.')
     group2.add_argument('-cell', type=str, default='lstm',
                         help='which rnn cell used.')

@@ -116,7 +116,7 @@ class BLSTM_CRF(object):
         if len(embedding_chars.get_shape().as_list()) != 3:
             raise ValueError("the inputs must be 3-dimentional Tensor")
         print('self.num_layers',self.num_layers)
-        for index, _ in enumerate(range(self.num_layers.get_shape().as_list())):
+        for index, _ in enumerate(range(self.num_layers)):
             # 为什么在这加个variable_scope,被逼的,tf在rnn_cell的__call__中非要搞一个命名空间检查
             # 恶心的很.如果不在这加的话,会报错的.
             with tf.variable_scope(None, default_name="bidirectional-rnn"):
