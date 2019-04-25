@@ -703,9 +703,10 @@ def train(args):
             #输出测试验证结果'''
         t0=time.time()
         estimator.train(input_fn=train_input_fn, max_steps=num_train_steps,hooks=[early_stopping_hook])  ##默认被注释掉
-        # 自己添加的
+
         t1=time.time()
         tf.logging.info('train spent time:{}s'.format(t1 - t0))
+        # 自己添加的
         eval_loss = estimator.evaluate(input_fn=eval_input_fn)
         t2 = time.time()
         tf.logging.info('eval_loss=\n{}'.format(eval_loss))
@@ -723,6 +724,7 @@ def train(args):
         # tf.logging.info('call eval_spec')
         # eval_spec = tf.estimator.EvalSpec(input_fn=eval_input_fn)
         # tf.logging.info('call tf.estimator.train_and_evaluate')
+        #单机上和分布式都可以使用
         # tf.estimator.train_and_evaluate(estimator, train_spec, eval_spec)
 
     #default do_predict is True
