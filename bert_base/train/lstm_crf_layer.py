@@ -123,7 +123,7 @@ class BLSTM_CRF(object):
                 print(index, 'embedding_chars o', embedding_chars)
                 # 这个结构每次要重新加载，否则会把之前的参数也保留从而出错
                 rnn_cell_fw, rnn_cell_bw = self._bi_dir_rnn()
-                print('self.lengths',self.lengths)
+                print('self.lengths',self.lengths)#self.lengths是张量不能直接传进来
                 # initial_state_fw = rnn_cell_fw.zero_state(self.lengths, dtype=tf.float32)
                 # initial_state_bw = rnn_cell_bw.zero_state(self.lengths, dtype=tf.float32)
 

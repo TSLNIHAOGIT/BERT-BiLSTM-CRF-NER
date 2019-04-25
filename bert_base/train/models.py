@@ -64,7 +64,7 @@ class DataProcessor(object):
 
 def create_model(bert_config, is_training, input_ids, input_mask,
                  segment_ids, labels, num_labels, use_one_hot_embeddings,
-                 dropout_rate=1.0, lstm_size=1, cell='lstm', num_layers=2):#num_layers=1
+                 dropout_rate=1.0, lstm_size=1, cell='lstm', num_layers=4):#num_layers=1
     """
     创建X模型
     :param bert_config: bert 配置
