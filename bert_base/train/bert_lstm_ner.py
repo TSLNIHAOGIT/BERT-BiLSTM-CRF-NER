@@ -12,7 +12,7 @@ reference from :zhoukaiyin/
 # from __future__ import absolute_import
 # from __future__ import division
 # from __future__ import print_function
-
+import time
 import sys,os
 sys.path.insert(0,os.path.abspath(os.path.join(os.path.dirname(__file__),'../..')))
 import collections
@@ -667,7 +667,8 @@ def train(args):
             seq_length=args.max_seq_length,
             is_training=True,
             drop_remainder=True)
-        # estimator.train(input_fn=train_input_fn, max_steps=num_train_steps)
+
+
         tf.logging.info('convert data to eval tf_record 数据')
         eval_file = os.path.join(args.output_dir, "eval.tf_record")
         if not os.path.exists(eval_file):
@@ -681,6 +682,10 @@ def train(args):
             is_training=False,
             drop_remainder=False)
 
+
+
+
+
         # train and eval togither
         tf.logging.info('call early stopping hook')
         early_stopping_hook = tf.contrib.estimator.stop_if_no_decrease_hook(
@@ -692,14 +697,33 @@ def train(args):
             run_every_secs=None,
             run_every_steps=args.save_checkpoints_steps)###
 
-        tf.logging.info('call train_spec')
-        train_spec = tf.estimator.TrainSpec(input_fn=train_input_fn, max_steps=num_train_steps,
-                                             hooks=[early_stopping_hook]
-                                            )
-        tf.logging.info('call eval_spec')
-        eval_spec = tf.estimator.EvalSpec(input_fn=eval_input_fn)
-        tf.logging.info('call tf.estimator.train_and_evaluate')
-        tf.estimator.train_and_evaluate(estimator, train_spec, eval_spec)
+        '''estimator.train(input_fn=lambda :my_input_fn(TRAIN_DATA),steps=300)
+            #训练完后进行验证，这里传入我们的测试数据
+            test_result = estimator.evaluate(input_fn=lambda :my_input_fn(TEST_DATA))
+            #输出测试验证结果'''
+        t0=time.time()
+        estimator.train(input_fn=train_input_fn, max_steps=num_train_steps,hooks=[early_stopping_hook])  ##默认被注释掉
+        # 自己添加的
+        t1=time.time()
+        tf.logging.info('train spent time:{}s'.format(t1 - t0))
+        eval_loss = estimator.evaluate(input_fn=eval_input_fn)
+        t2 = time.time()
+        tf.logging.info('eval_loss=\n{}'.format(eval_loss))
+        tf.logging.info('eval spent time:{}s'.format(t2 - t1))
+
+
+
+
+
+
+        # tf.logging.info('call train_spec')
+        # train_spec = tf.estimator.TrainSpec(input_fn=train_input_fn, max_steps=num_train_steps,
+        #                                      hooks=[early_stopping_hook]
+        #                                     )
+        # tf.logging.info('call eval_spec')
+        # eval_spec = tf.estimator.EvalSpec(input_fn=eval_input_fn)
+        # tf.logging.info('call tf.estimator.train_and_evaluate')
+        # tf.estimator.train_and_evaluate(estimator, train_spec, eval_spec)
 
     #default do_predict is True
     if args.do_predict:
@@ -776,9 +800,11 @@ def train(args):
         tf.logging.info('save predicted result :label_test.txt')
         with codecs.open(output_predict_file, 'w', encoding='utf-8') as writer:
             result_to_pair(writer)
+
+        tf.logging.info('import conlleval to eval and get eval_result ')
         from bert_base.train import conlleval
         eval_result = conlleval.return_report(output_predict_file)
-        tf.logging.info('eval_result:\n'.format(''.join(eval_result)))
+        tf.logging.info('eval_result:\n{}'.format(''.join(eval_result)))
         # 写结果到文件中
         tf.logging.info('save predict_score.txt')
         with codecs.open(os.path.join(args.output_dir, 'predict_score.txt'), 'a', encoding='utf-8') as fd:
