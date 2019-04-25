@@ -50,11 +50,11 @@ class BLSTM_CRF(object):
             self.embedded_chars = tf.nn.dropout(self.embedded_chars, self.dropout_rate)
 
         if crf_only:
-            print("start call only crf")
+            tf.logging.info("start call only crf")
             logits = self.project_crf_layer(self.embedded_chars)
         else:
             # blstm
-            print("start call blstm")
+            tf.logging.info("start call blstm")
             lstm_output = self.blstm_layer(self.embedded_chars)
             # project
             logits = self.project_bilstm_layer(lstm_output)
@@ -109,22 +109,22 @@ class BLSTM_CRF(object):
     ##实际多层双向rnn
     def blstm_layer(self, embedding_chars):
 
-        print('embedding_chars', embedding_chars)  # Tensor("encoder/embedding_lookup/Identity:0", shape=(?, ?, 1024), dtype=float32)
+        tf.logging.info('embedding_chars:{}'.format( embedding_chars))  # Tensor("encoder/embedding_lookup/Identity:0", shape=(?, ?, 1024), dtype=float32)
         ###
         # 5-50／10000 L2；
 
         if len(embedding_chars.get_shape().as_list()) != 3:
             raise ValueError("the inputs must be 3-dimentional Tensor")
-        print('self.num_layers',self.num_layers)
+        tf.logging.info('self.num_layers:{}'.format(self.num_layers))
         for index, _ in enumerate(range(self.num_layers)):
             # 为什么在这加个variable_scope,被逼的,tf在rnn_cell的__call__中非要搞一个命名空间检查
             # 恶心的很.如果不在这加的话,会报错的.
             with tf.variable_scope(None, default_name="bidirectional-rnn"):
-                print(index, 'embedding_chars o', embedding_chars)
+                tf.logging.info('index={}, embedding_chars o={}'.format(index, embedding_chars))
                 # 这个结构每次要重新加载，否则会把之前的参数也保留从而出错
                 rnn_cell_fw, rnn_cell_bw = self._bi_dir_rnn()
                 #self.lengths Tensor("Sum:0", shape=(32,), dtype=int32) [32]
-                print('self.lengths',self.lengths,self.lengths.get_shape().as_list())#self.lengths是张量不能直接传进来#评估时是None出错
+                # print('self.lengths',self.lengths,self.lengths.get_shape().as_list())#self.lengths是张量不能直接传进来#评估时是None出错
                 # initial_state_fw = rnn_cell_fw.zero_state(self.lengths.get_shape().as_list()[0], dtype=tf.float32)
                 # initial_state_bw = rnn_cell_bw.zero_state(self.lengths.get_shape().as_list()[0], dtype=tf.float32)
 
@@ -132,7 +132,7 @@ class BLSTM_CRF(object):
                                                                   # initial_state_fw=initial_state_fw,
                                                                   # initial_state_bw=initial_state_bw,
                                                                   dtype=tf.float32)
-                print('index,output', index, output)
+                tf.logging.info('index,output:{}'.format( index, output))
                 embedding_chars = tf.concat(output, 2)
         encoder_outputs = embedding_chars
         return encoder_outputs
