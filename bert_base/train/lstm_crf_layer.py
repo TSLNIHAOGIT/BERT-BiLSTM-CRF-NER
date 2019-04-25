@@ -115,8 +115,8 @@ class BLSTM_CRF(object):
 
         if len(embedding_chars.get_shape().as_list()) != 3:
             raise ValueError("the inputs must be 3-dimentional Tensor")
-
-        for index, _ in enumerate(range(self.num_layers)):
+        print('self.num_layers',self.num_layers)
+        for index, _ in enumerate(range(self.num_layers.get_shape().as_list())):
             # 为什么在这加个variable_scope,被逼的,tf在rnn_cell的__call__中非要搞一个命名空间检查
             # 恶心的很.如果不在这加的话,会报错的.
             with tf.variable_scope(None, default_name="bidirectional-rnn"):
@@ -124,8 +124,8 @@ class BLSTM_CRF(object):
                 # 这个结构每次要重新加载，否则会把之前的参数也保留从而出错
                 rnn_cell_fw, rnn_cell_bw = self._bi_dir_rnn()
                 print('self.lengths',self.lengths)#self.lengths是张量不能直接传进来
-                # initial_state_fw = rnn_cell_fw.zero_state(self.lengths, dtype=tf.float32)
-                # initial_state_bw = rnn_cell_bw.zero_state(self.lengths, dtype=tf.float32)
+                initial_state_fw = rnn_cell_fw.zero_state(self.lengths.get_shape().as_list(), dtype=tf.float32)
+                initial_state_bw = rnn_cell_bw.zero_state(self.lengths.get_shape().as_list(), dtype=tf.float32)
 
                 (output, _) = tf.nn.bidirectional_dynamic_rnn(rnn_cell_fw, rnn_cell_bw, embedding_chars,
                                                                   # initial_state_fw=initial_state_fw,
