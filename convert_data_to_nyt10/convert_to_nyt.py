@@ -11,7 +11,6 @@ path_relation='../output/label_test_relation.json'
 all_rel_data=[]
 each_sentence_rel_data={}
 
-
 ##随机取会导致实体id重复，因此要将每个实体的分配唯一id
 counts = 9000
 all_ids=generate_id.generateid_list(counts)
@@ -20,7 +19,6 @@ all_ids=generate_id.generateid_list(counts)
 
 counts_entity=0
 all_ids_dict={}
-
 
 with open(path,encoding='utf8') as f:
     each_point_text=[]
