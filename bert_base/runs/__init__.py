@@ -27,7 +27,8 @@ def start_client():
 def train_ner():
     import os
     from bert_base.train.train_helper import get_args_parser
-    from bert_base.train.bert_lstm_ner import train
+    # from bert_base.train.bert_lstm_ner import train#train和eval同时进行
+    from bert_base.train.bert_lstm_ner_train_inpend_eval import train#train和eval可以分开进行
 
     args = get_args_parser()
     if True:

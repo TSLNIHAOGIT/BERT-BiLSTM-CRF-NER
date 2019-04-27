@@ -600,12 +600,12 @@ def train(args):
         session_config=session_config
     )
 
-    train_examples = None
     eval_examples = None
+    train_examples = None
     num_train_steps = None
     num_warmup_steps = None
 
-    # default args.do_train and args.do_eval are true
+
 
     if args.do_train :
         # 加载训练数据
