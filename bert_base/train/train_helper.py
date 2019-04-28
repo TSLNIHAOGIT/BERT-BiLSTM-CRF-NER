@@ -21,7 +21,7 @@ def get_args_parser():
     else:
         # bert_path = '/ai/chinese_L-12_H-768_A-12/'
         bert_path = '/ai/uncased_L-12_H-768_A-12/'
-        root_path = '/ai'
+        root_path = '/home/amis/Documents/tsl/BERT-BiLSTM-CRF-NER'# 前面是gpu服务器 华为云服务器docker镜像'/ai'
 
     group1 = parser.add_argument_group('File Paths',
                                        'config the path, checkpoint and filename of a pretrained/fine-tuned BERT model')
