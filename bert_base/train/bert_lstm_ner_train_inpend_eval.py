@@ -681,6 +681,7 @@ def train(args):
             test_result = estimator.evaluate(input_fn=lambda :my_input_fn(TEST_DATA))
             #输出测试验证结果'''
         t0=time.time()
+        tf.logging.info('start time and train')
         estimator.train(input_fn=train_input_fn, max_steps=num_train_steps,hooks=[early_stopping_hook])  ##默认被注释掉
 
         tt1=time.time()
