@@ -24,11 +24,16 @@ def get_args_parser():
         # bert_path = '/home/amis/Documents/tsl/BERT-BiLSTM-CRF-NER/ai/uncased_L-12_H-768_A-12/'
         # root_path = '/home/amis/Documents/tsl/BERT-BiLSTM-CRF-NER'# 前面是gpu服务器 华为云服务器docker镜像'/ai'
 
-        #华为云服务器
-        # bert_path = '/ai/uncased_L-12_H-768_A-12/'
-        bert_path='/ai/chinese_L-12_H-768_A-12'
-        root_path = '/ai'  # 前面是gpu服务器 华为云服务器docker镜像'/ai'
+        # #华为云服务器
+        # # bert_path = '/ai/uncased_L-12_H-768_A-12/'
+        # bert_path='/ai/chinese_L-12_H-768_A-12'
+        # root_path = '/ai'  # 前面是gpu服务器 华为云服务器docker镜像'/ai'
 
+        # 华为云服务器
+        # bert_path = '/ai/uncased_L-12_H-768_A-12/'
+
+        root_path = os.path.abspath(os.path.join(os.path.dirname(__file__),'../..'))  # 前面是gpu服务器 华为云服务器docker镜像'/ai'
+        bert_path = os.path.join(root_path,'/ai/chinese_L-12_H-768_A-12')
     group1 = parser.add_argument_group('File Paths',
                                        'config the path, checkpoint and filename of a pretrained/fine-tuned BERT model')
     group1.add_argument('-data_dir', type=str, default=os.path.join(root_path, 'NERdata'),#NERdata_examples
@@ -91,3 +96,9 @@ def get_args_parser():
     parser.add_argument('-ner', type=str, default='ner', help='which modle to train')
     parser.add_argument('-version', action='version', version='%(prog)s ' + __version__)
     return parser.parse_args()
+
+if __name__=='__main__':
+    root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))  # 前面是gpu服务器 华为云服务器docker镜像'/ai'
+    bert_path = os.path.join(root_path, 'chinese_L-12_H-768_A-12')
+    print('root_path',root_path)
+    print('bert_path',bert_path)
