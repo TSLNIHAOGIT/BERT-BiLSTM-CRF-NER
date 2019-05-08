@@ -25,7 +25,8 @@ def get_args_parser():
         # root_path = '/home/amis/Documents/tsl/BERT-BiLSTM-CRF-NER'# 前面是gpu服务器 华为云服务器docker镜像'/ai'
 
         #华为云服务器
-        bert_path = '/ai/uncased_L-12_H-768_A-12/'
+        # bert_path = '/ai/uncased_L-12_H-768_A-12/'
+        bert_path='/ai/chinese_L-12_H-768_A-12'
         root_path = '/ai'  # 前面是gpu服务器 华为云服务器docker镜像'/ai'
 
     group1 = parser.add_argument_group('File Paths',
@@ -53,7 +54,7 @@ def get_args_parser():
                         help='Total batch size for training, eval and predict.')
     group2.add_argument('-learning_rate', type=float, default=1e-5,
                         help='The initial learning rate for Adam.')
-    group2.add_argument('-num_train_epochs', type=float, default=50,
+    group2.add_argument('-num_train_epochs', type=float, default=5,
                         help='Total number of training epochs to perform.')
     group2.add_argument('-dropout_rate', type=float, default=0.5,
                         help='Dropout rate')
