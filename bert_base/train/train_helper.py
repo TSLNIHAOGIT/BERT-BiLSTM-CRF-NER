@@ -33,7 +33,7 @@ def get_args_parser():
         # bert_path = '/ai/uncased_L-12_H-768_A-12/'
 
         root_path = os.path.abspath(os.path.join(os.path.dirname(__file__),'../..'))  # 前面是gpu服务器 华为云服务器docker镜像'/ai'
-        bert_path = os.path.join(root_path,'/ai/chinese_L-12_H-768_A-12')
+        bert_path = os.path.join(root_path,'chinese_L-12_H-768_A-12')
     group1 = parser.add_argument_group('File Paths',
                                        'config the path, checkpoint and filename of a pretrained/fine-tuned BERT model')
     group1.add_argument('-data_dir', type=str, default=os.path.join(root_path, 'NERdata'),#NERdata_examples
