@@ -184,6 +184,13 @@ class NerProcessor(DataProcessor):
             for line in f:
                 contends = line.strip()
                 tokens = contends.split(' ')
+
+                #正常情况
+                '''
+                韩 O
+                国 O
+                梦 O
+                '''
                 if len(tokens) == 2:
                     words.append(tokens[0])
                     labels.append(tokens[-1])
@@ -201,6 +208,8 @@ class NerProcessor(DataProcessor):
                         labels = []
                         continue
                 if contends.startswith("-DOCSTART-"):
+                    continue
+                if contends.startswith("-DOCEND-"):
                     continue
             return lines
 

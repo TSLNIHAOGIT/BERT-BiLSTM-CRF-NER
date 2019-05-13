@@ -6,10 +6,7 @@ with open('../output/rel2id.json',encoding='utf8') as f:
 
 relations=list(relation_dict.keys())
 
-#真实用到
-# path='../output/label_test.txt'
-
-path='../NERdata/train.txt'
+path='../output/label_test.txt'
 path_relation='../output/label_test_relation.json'
 all_rel_data=[]
 each_sentence_rel_data={}
@@ -33,6 +30,7 @@ with open(path,encoding='utf8') as f:
     each_sentence_entitys_label = []
     eachs_entity = ''
 
+    previous_entity=''
     for index, each in enumerate(f):
             each_list=each.strip().split(' ')
             length=len(each_list)
@@ -111,11 +109,12 @@ with open(path,encoding='utf8') as f:
             else:
                 # print('each_list', each_list)
                 text = each_list[0]
-                true_label = each_list[1]
+                # true_label = each_list[1]
 
-                # predicted_label=each_list[2]
-                # #使用预测的label就没有修改下面的变量
-                # true_label=predicted_label
+                predicted_label=each_list[2]
+
+                #使用预测的label就没有修改下面的变量
+                true_label=predicted_label
 
 
                 each_point_text.append(text)
