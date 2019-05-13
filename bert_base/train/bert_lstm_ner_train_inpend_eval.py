@@ -110,7 +110,7 @@ class NerProcessor(DataProcessor):
     #用于预测
     def get_test_examples(self, data_dir):
         return self._create_example(
-            self._read_data(os.path.join(data_dir, "test.txt")), "test")
+            self._read_data_predict(os.path.join(data_dir, "test.txt")), "test")
 
 
     # #待会在看怎么调用的
@@ -202,6 +202,50 @@ class NerProcessor(DataProcessor):
                         continue
                 if contends.startswith("-DOCSTART-"):
                     continue
+            return lines
+    def _read_data_predict(self, input_file):
+        """Reads a BIO data."""
+        with codecs.open(input_file, 'r', encoding='utf-8') as f:
+            lines = []
+            words = []
+            labels = []
+            for line in f:
+                contends = line.strip()
+                tokens = contends.split(' ')
+
+                #正常情况
+                '''
+                韩 O
+                国 O
+                梦 O
+                '''
+                if len(tokens) == 1:
+                    words.append(tokens[0])
+                    labels.append('O')
+                elif len(tokens) == 2:
+                    words.append(tokens[0])
+                    labels.append(tokens[-1])
+                else:
+                    if len(contends) == 0 and len(words) > 0:
+                        label = []
+                        word = []
+                        for l, w in zip(labels, words):
+                            if len(l) > 0 and len(w) > 0:
+                                label.append(l)
+                                self.labels.add(l)
+                                word.append(w)
+                        lines.append([' '.join(label), ' '.join(word)])
+                        words = []
+                        labels = []
+                        continue
+
+
+
+
+                # if contends.startswith("-DOCSTART-"):
+                #     continue
+                # if contends.startswith("-DOCEND-"):
+                #     continue
             return lines
 
 

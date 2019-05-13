@@ -9,7 +9,7 @@ relations=list(relation_dict.keys())
 #真实用到
 # path='../output/label_test.txt'
 
-path='../NERdata/train.txt'
+path='../NERdata/test.txt'
 path_relation='../output/label_test_relation.json'
 all_rel_data=[]
 each_sentence_rel_data={}
