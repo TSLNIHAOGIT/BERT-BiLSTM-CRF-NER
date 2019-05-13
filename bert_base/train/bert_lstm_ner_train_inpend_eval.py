@@ -83,6 +83,9 @@ class DataProcessor(object):
                     words.append('')
                     continue
             return lines
+
+
+
 '''
 [
     ['O O O O O O O O O O O O O O O B-LOC B-LOC O B-LOC B-LOC O O O O O O O O O O O O O O O O O O O O', '我 们 变 而 以 书 会 友 ， 以 书 结 缘 ， 把 欧 美 、 港 台 流 行 的 食 品 类 图 谱 、 画 册 、 工 具 书 汇 集 一 堂 。']
@@ -219,10 +222,7 @@ class NerProcessor(DataProcessor):
                 国 O
                 梦 O
                 '''
-                if len(tokens) == 1:
-                    words.append(tokens[0])
-                    labels.append('O')
-                elif len(tokens) == 2:
+                if len(tokens) == 2:
                     words.append(tokens[0])
                     labels.append(tokens[-1])
                 else:
@@ -238,6 +238,9 @@ class NerProcessor(DataProcessor):
                         words = []
                         labels = []
                         continue
+                    else:
+                        words.append(tokens[0])
+                        labels.append('O')
 
 
 
@@ -858,20 +861,25 @@ def train(args):
 
 if __name__=='__main__':
     ################################
-    # lines=DataProcessor()._read_data('../../NERdata/test.txt')
+    lines=NerProcessor(DataProcessor)._read_data_predict('../../NERdata/test.txt')
+
+    # lines = DataProcessor()._read_data('../../NERdata/test.txt')
+    print('lines',lines[0:3])
     # for each in lines:
     #     print(each)
     #################################
-    lines=[
-        ['O O O O O O O O O O O O O O O B-LOC B-LOC O B-LOC B-LOC O O O O O O O O O O O O O O O O O O O O',
-         '我 们 变 而 以 书 会 友 ， 以 书 结 缘 ， 把 欧 美 、 港 台 流 行 的 食 品 类 图 谱 、 画 册 、 工 具 书 汇 集 一 堂 。'],
-        [
-            'O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O', '为 了 跟 踪 国 际 最 新 食 品 工 艺 、 流 行 趋 势 ， 大 量 搜 集 海 外 专 业 书 刊 资 料 是 提 高 技 艺 的 捷 径 。'],
-        [
-            'O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O', '其 中 线 装 古 籍 逾 千 册 ； 民 国 出 版 物 几 百 种 ； 珍 本 四 册 、 稀 见 本 四 百 余 册 ， 出 版 时 间 跨 越 三 百 余 年 。'],
+    # lines=[
+    #     ['O O O O O O O O O O O O O O O B-LOC B-LOC O B-LOC B-LOC O O O O O O O O O O O O O O O O O O O O',
+    #      '我 们 变 而 以 书 会 友 ， 以 书 结 缘 ， 把 欧 美 、 港 台 流 行 的 食 品 类 图 谱 、 画 册 、 工 具 书 汇 集 一 堂 。'],
+    #     [
+    #         'O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O', '为 了 跟 踪 国 际 最 新 食 品 工 艺 、 流 行 趋 势 ， 大 量 搜 集 海 外 专 业 书 刊 资 料 是 提 高 技 艺 的 捷 径 。'],
+    #     [
+    #         'O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O O', '其 中 线 装 古 籍 逾 千 册 ； 民 国 出 版 物 几 百 种 ； 珍 本 四 册 、 稀 见 本 四 百 余 册 ， 出 版 时 间 跨 越 三 百 余 年 。'],
+    #
+    # ]
+    # examples=NerProcessor(DataProcessor)._create_example(lines, set_type='test')
+    # print('example:',examples)
+    # for each in examples:
+    #     print('each',each.guid)
 
-    ]
-    examples=NerProcessor(DataProcessor)._create_example(lines, set_type='test')
-    print('example:',examples)
-    for each in examples:
-        print('each',each.guid)
+
