@@ -55,7 +55,16 @@ with open(path,encoding='utf8') as f:
                     sentence_label = ' '.join(each_point_label)
 
                 #多个实体时只取前两个
+
+                # 去重但是保持顺序
+                each_sentence_entitys_new = list(set(each_sentence_entitys))
+                each_sentence_entitys_new.sort(key=each_sentence_entitys.index)
+                each_sentence_entitys = each_sentence_entitys_new
+
                 if len(each_sentence_entitys)>1:
+
+
+
 
                         if each_sentence_entitys[0] not in all_ids_dict:
                             # #自己生成id
@@ -65,7 +74,7 @@ with open(path,encoding='utf8') as f:
                             all_ids_dict[each_sentence_entitys[0]] = each_sentence_entitys[0]
 
 
-                            counts_entity = counts_entity + 1
+                            # counts_entity = counts_entity + 1
                         if each_sentence_entitys[1] not in all_ids_dict:
 
                             # all_ids_dict[each_sentence_entitys[1]]= all_ids[counts_entity]
