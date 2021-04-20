@@ -306,6 +306,7 @@ def read_squad_examples(input_file, is_training):
   return examples
 
 
+
 def convert_examples_to_features(examples, tokenizer, max_seq_length,
                                  doc_stride, max_query_length, is_training,
                                  output_fn):
@@ -313,6 +314,7 @@ def convert_examples_to_features(examples, tokenizer, max_seq_length,
 
   unique_id = 1000000000
 
+  ##examples是所有的样本，循环处理每一个样本
   for (example_index, example) in enumerate(examples):
     query_tokens = tokenizer.tokenize(example.question_text)
 
@@ -324,11 +326,14 @@ def convert_examples_to_features(examples, tokenizer, max_seq_length,
     all_doc_tokens = []
     for (i, token) in enumerate(example.doc_tokens):
       orig_to_tok_index.append(len(all_doc_tokens))
+      ##对tokens进行细分，wordpiece等操作
       sub_tokens = tokenizer.tokenize(token)
       for sub_token in sub_tokens:
         tok_to_orig_index.append(i)
+        ##得到所有细分之后的tokens
         all_doc_tokens.append(sub_token)
 
+    ##更新答案开始和结束位置
     tok_start_position = None
     tok_end_position = None
     if is_training and example.is_impossible:
@@ -347,6 +352,7 @@ def convert_examples_to_features(examples, tokenizer, max_seq_length,
     # The -3 accounts for [CLS], [SEP] and [SEP]
     max_tokens_for_doc = max_seq_length - len(query_tokens) - 3
 
+    ####构建doc_span,并将所有的doc_span放到列表中
     # We can have documents that are longer than the maximum sequence length.
     # To deal with this we do a sliding window approach, where we take chunks
     # of the up to our max length with a stride of `doc_stride`.
@@ -363,6 +369,10 @@ def convert_examples_to_features(examples, tokenizer, max_seq_length,
         break
       start_offset += min(length, doc_stride)
 
+    #处理每一个doc_span,变成多条数据，并修改答案的开始和结束位置
+    # 变为cls+query+sep+doc_span1+sep
+    # cls+query+sep+doc_span2+sep
+    # cls+query+sep+doc_span3+sep
     for (doc_span_index, doc_span) in enumerate(doc_spans):
       tokens = []
       token_to_orig_map = {}
@@ -451,7 +461,7 @@ def convert_examples_to_features(examples, tokenizer, max_seq_length,
           tf.logging.info("end_position: %d" % (end_position))
           tf.logging.info(
               "answer: %s" % (tokenization.printable_text(answer_text)))
-
+      #一个example拥有多个doc_span,每个doc_span都写一个feature,多个就写成多个feature
       feature = InputFeatures(
           unique_id=unique_id,
           example_index=example_index,
@@ -467,6 +477,7 @@ def convert_examples_to_features(examples, tokenizer, max_seq_length,
           is_impossible=example.is_impossible)
 
       # Run callback
+      ##每个doc_span都要写入一个特征
       output_fn(feature)
 
       unique_id += 1
@@ -769,8 +780,10 @@ def write_predictions(all_examples, all_features, all_results, n_best_size,
     min_null_feature_index = 0  # the paragraph slice with min mull score
     null_start_logit = 0  # the start logit at the slice with min null score
     null_end_logit = 0  # the end logit at the slice with min null score
+
+    # multi-trunk,一个example里面可能有多条doc_span构成的数据
     for (feature_index, feature) in enumerate(features):
-      result = unique_id_to_result[feature.unique_id]
+      result = unique_id_to_result[feature.unique_id]##每个feature都有唯一id
       start_indexes = _get_best_indexes(result.start_logits, n_best_size)
       end_indexes = _get_best_indexes(result.end_logits, n_best_size)
       # if we could have irrelevant answers, get the min score of irrelevant
@@ -794,6 +807,7 @@ def write_predictions(all_examples, all_features, all_results, n_best_size,
             continue
           if end_index not in feature.token_to_orig_map:
             continue
+          ##预测时只使用拥有最大上下文的那个doc_span进行预测,每个doc_span都是一个feature
           if not feature.token_is_max_context.get(start_index, False):
             continue
           if end_index < start_index:
@@ -1186,6 +1200,8 @@ def main(_):
     train_writer = FeatureWriter(
         filename=os.path.join(FLAGS.output_dir, "train.tf_record"),
         is_training=True)
+
+    ###这里面，对于一个example的多个doc_span就会写入多个特征，每个特征调用output_fn写一次
     convert_examples_to_features(
         examples=train_examples,
         tokenizer=tokenizer,
